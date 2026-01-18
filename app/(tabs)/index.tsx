@@ -1,98 +1,183 @@
+import React, { useState } from 'react';
+import { 
+  StyleSheet, 
+  TextInput, 
+  TouchableOpacity, 
+  KeyboardAvoidingView, 
+  Platform, 
+  Alert, 
+  useColorScheme, 
+  View // <--- ADICIONADO: Faltava importar isso
+} from 'react-native';
+import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
 
-export default function HomeScreen() {
+export default function LoginScreen() {
+  const router = useRouter();
+  const colorScheme = useColorScheme();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const isDark = colorScheme === 'dark';
+  // Cores dinâmicas para os inputs
+  const inputBgColor = isDark ? '#2C2C2E' : '#F2F2F7';
+  const inputTextColor = isDark ? '#FFFFFF' : '#000000';
+  const placeholderColor = isDark ? '#8E8E93' : '#A1A1A6';
+
+  const handleLogin = () => {
+    if (!email || !password) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+      return;
+    }
+    Alert.alert('Sucesso', `Logado como: ${email}`);
+    // router.replace('/(tabs)'); // Descomente para navegar após o login
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <ThemedView style={styles.container}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.content}
+      >
+        {/* Cabeçalho */}
+        <View style={styles.header}>
+          <Image
+            source={require('@/assets/images/partial-react-logo.png')} // <--- CORRIGIDO: Nome exato do arquivo do seu projeto
+            style={styles.logo}
+            contentFit="contain"
+          />
+          <ThemedText type="title" style={styles.title}>Bem-vindo</ThemedText>
+          <ThemedText style={styles.subtitle}>Faça login para continuar</ThemedText>
+        </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        {/* Formulário */}
+        <View style={styles.form}>
+          <View style={styles.inputContainer}>
+            <ThemedText type="defaultSemiBold" style={styles.label}>Email</ThemedText>
+            <TextInput
+              style={[styles.input, { backgroundColor: inputBgColor, color: inputTextColor }]}
+              placeholder="exemplo@email.com"
+              placeholderTextColor={placeholderColor}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={email}
+              onChangeText={setEmail}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <ThemedText type="defaultSemiBold" style={styles.label}>Senha</ThemedText>
+            <TextInput
+              style={[styles.input, { backgroundColor: inputBgColor, color: inputTextColor }]}
+              placeholder="********"
+              placeholderTextColor={placeholderColor}
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+          </View>
+
+          <TouchableOpacity style={styles.forgotPassword} onPress={() => Alert.alert('Info', 'Funcionalidade em desenvolvimento')}>
+            <ThemedText style={styles.linkText}>Esqueceu a senha?</ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <ThemedText style={styles.buttonText}>Entrar</ThemedText>
+            <Ionicons name="arrow-forward" size={20} color="#FFF" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Rodapé */}
+        <View style={styles.footer}>
+          <ThemedText>Não tem uma conta? </ThemedText>
+          {/* Certifique-se de que a rota /signup existe ou mude para onde desejar */}
+          <TouchableOpacity onPress={() => Alert.alert('Info', 'Ir para cadastro')}> 
+            <ThemedText type="defaultSemiBold" style={styles.linkText}>Cadastre-se</ThemedText>
+          </TouchableOpacity>
+        </View>
+
+      </KeyboardAvoidingView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    padding: 32,
+    justifyContent: 'center',
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  logo: {
+    width: 120, // Aumentei um pouco para ficar mais visível
+    height: 120,
+    marginBottom: 20,
+  },
+  title: {
+    marginBottom: 8,
+    fontSize: 28,
+  },
+  subtitle: {
+    opacity: 0.7,
+    fontSize: 16,
+  },
+  form: {
+    gap: 20,
+  },
+  inputContainer: {
+    gap: 8,
+  },
+  label: {
+    marginLeft: 4,
+    fontSize: 14,
+  },
+  input: {
+    height: 52,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    // Removemos borda padrão para ficar mais moderno, usamos apenas a cor de fundo
+  },
+  forgotPassword: {
+    alignSelf: 'flex-end',
+  },
+  button: {
+    backgroundColor: '#0a7ea4', 
+    height: 56,
+    borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
     gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 4,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  buttonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 18,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 40,
+    gap: 4,
+  },
+  linkText: {
+    color: '#0a7ea4',
   },
 });
