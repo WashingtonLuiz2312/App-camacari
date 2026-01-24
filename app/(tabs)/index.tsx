@@ -131,7 +131,7 @@ export default function HomeScreen() {
           {/* Acesso Rápido */}
           <SectionHeader title="Acesso Rápido" actionText={null} />
           <View style={styles.quickAccessContainer}>
-            <TouchableOpacity style={[styles.quickButton, { backgroundColor: BRAND_COLORS.purple }]} onPress={() => router.push('../agendar')}>
+            <TouchableOpacity style={[styles.quickButton, { backgroundColor: BRAND_COLORS.purple }]} onPress={() => router.push('/agendamento/agendar')}>
               <Ionicons name="calendar" size={24} color="#FFF" />
               <Text style={styles.quickButtonText}>Agendar</Text>
             </TouchableOpacity>
@@ -141,7 +141,7 @@ export default function HomeScreen() {
               <Text style={styles.quickButtonText}>Notícias</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.quickButton, { backgroundColor: BRAND_COLORS.green }]} onPress={() => router.push('../turismo')}>
+            <TouchableOpacity style={[styles.quickButton, { backgroundColor: BRAND_COLORS.green }]} onPress={() => router.push('/turismo/turismo')}>
               <Ionicons name="map" size={24} color="#FFF" />
               <Text style={styles.quickButtonText}>Turismo</Text>
             </TouchableOpacity>
