@@ -156,7 +156,13 @@ export default function HomeScreen() {
                 title={service.title}
                 icon={service.icon as keyof typeof Ionicons.glyphMap}
                 color={service.color}
-                onPress={() => console.log(`Clicou em ${service.title}`)} 
+                onPress={() => {
+                  if (service.title === 'Transporte') {
+                    router.push('/transporte/transporte');
+                  } else {
+                    console.log(`Clicou em ${service.title}`)
+                  }
+                }} 
               />
             ))}
           </View>
