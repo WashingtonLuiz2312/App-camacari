@@ -141,7 +141,7 @@ export default function HomeScreen() {
               <Text style={styles.quickButtonText}>Notícias</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.quickButton, { backgroundColor: BRAND_COLORS.green }]} onPress={() => router.push('/turismo')}>
+            <TouchableOpacity style={[styles.quickButton, { backgroundColor: BRAND_COLORS.green }]} onPress={() => router.push('../turismo')}>
               <Ionicons name="map" size={24} color="#FFF" />
               <Text style={styles.quickButtonText}>Turismo</Text>
             </TouchableOpacity>

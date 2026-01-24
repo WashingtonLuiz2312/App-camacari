@@ -33,12 +33,12 @@ const COLORS = {
 const beaches = [
   {
     id: 1,
-    name: 'Guarajuba',
-    tag: 'Família',
-    desc: 'Águas cristalinas e piscinas naturais. Infraestrutura completa.',
-    image: require('@/assets/images/guarajuba.png'), 
-    distance: '42 km',
-    rating: 4.9
+    name: 'Jauá',
+    tag: 'Lazer',
+    desc: 'Dunas brancas e o famoso "piscinão" natural.',
+    image: require('@/assets/images/jaua.jpg'),
+    distance: '25 km',
+    rating: 4.5
   },
   {
     id: 2,
@@ -51,21 +51,21 @@ const beaches = [
   },
   {
     id: 3,
+    name: 'Guarajuba',
+    tag: 'Família',
+    desc: 'Águas cristalinas e piscinas naturais. Infraestrutura completa.',
+    image: require('@/assets/images/guarajuba.png'), 
+    distance: '42 km',
+    rating: 4.9
+  },
+  {
+    id: 4,
     name: 'Itacimirim',
     tag: 'Surf & Natureza',
     desc: 'Ondas para surf e encontro do rio com o mar.',
     image: require('@/assets/images/itacimirim.jpg'),
     distance: '48 km',
     rating: 4.8
-  },
-  {
-    id: 4,
-    name: 'Jauá',
-    tag: 'Lazer',
-    desc: 'Dunas brancas e o famoso "piscinão" natural.',
-    image: require('@/assets/images/jaua.jpg'),
-    distance: '25 km',
-    rating: 4.5
   },
 ];
 
