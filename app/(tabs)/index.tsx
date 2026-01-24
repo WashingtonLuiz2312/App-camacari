@@ -131,7 +131,7 @@ export default function HomeScreen() {
           {/* Acesso Rápido */}
           <SectionHeader title="Acesso Rápido" actionText={null} />
           <View style={styles.quickAccessContainer}>
-            <TouchableOpacity style={[styles.quickButton, { backgroundColor: BRAND_COLORS.purple }]} onPress={() => router.push('/agendamento/agendar')}>
+            <TouchableOpacity style={[styles.quickButton, { backgroundColor: BRAND_COLORS.purple }]} onPress={() => router.push('../agendar')}>
               <Ionicons name="calendar" size={24} color="#FFF" />
               <Text style={styles.quickButtonText}>Agendar</Text>
             </TouchableOpacity>
