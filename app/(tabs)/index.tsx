@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import type { Ionicons as IonIconsType } from '@expo/vector-icons';
 
 // ==========================================
 // 1. CONFIGURAÇÕES E CORES
@@ -155,7 +154,7 @@ export default function HomeScreen() {
               <ServiceCard 
                 key={service.id}
                 title={service.title}
-                icon={service.icon}
+                icon={service.icon as keyof typeof Ionicons.glyphMap}
                 color={service.color}
                 onPress={() => console.log(`Clicou em ${service.title}`)} 
               />
