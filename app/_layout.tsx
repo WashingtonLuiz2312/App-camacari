@@ -16,6 +16,7 @@ export default function RootLayout() {
         <Stack.Screen name='turismo/turismo' options={{ headerShown: false }}/>
         <Stack.Screen name='agendamento/agendar' options={{ headerShown: false }}/>
         <Stack.Screen name='transporte/transporte' options={{ headerShown: false }}/>
+        <Stack.Screen name='educacao/educacao' options={{ headerShown: false }}/>
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

@@ -159,6 +159,8 @@ export default function HomeScreen() {
                 onPress={() => {
                   if (service.title === 'Transporte') {
                     router.push('/transporte/transporte');
+                  } else if (service.title === 'Educação') {
+                    router.push('/educacao/educacao');
                   } else {
                     console.log(`Clicou em ${service.title}`)
                   }
