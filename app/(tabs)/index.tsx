@@ -161,8 +161,10 @@ export default function HomeScreen() {
                     router.push('/transporte/transporte');
                   } else if (service.title === 'Educação') {
                     router.push('/educacao/educacao');
+                  } else if (service.title === 'Saúde & Vacinas') {
+                    router.push('/saude/saude');
                   } else {
-                    console.log(`Clicou em ${service.title}`)
+                    console.log(`Clicou em ${service.title}`);
                   }
                 }} 
               />
