@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -7,6 +7,8 @@ import {
   TouchableOpacity, 
   StatusBar,
   Dimensions,
+  Alert,
+  Modal,
   Platform
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -16,152 +18,128 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 
 // ==========================================
-// 1. PALETA DE CORES & TEMA
+// 1. DESIGN SYSTEM (PREMIUM HEALTH THEME)
 // ==========================================
 const { width } = Dimensions.get('window');
 const SPACING = 24;
 
 const COLORS = {
-  primary: '#E53935',     // Vermelho Marca
-  primaryDark: '#C62828', 
-  primarySoft: '#FFEBEE',
+  // Primária: Vermelho Camaçari (Sofisticado)
+  primary: '#E53935',
+  primaryGradient: ['#E53935', '#FF5252'] as const, 
   
-  bg: '#F4F6F9',          // Off-white mais frio para saúde
-  surface: '#FFFFFF',
+  // Neutros
+  bg: '#F2F4F7',        // Cinza azulado (frio e limpo)
+  surface: '#FFFFFF',   // Branco puro
+  textHeading: '#111827',
+  textBody: '#6B7280',
+  border: '#E5E7EB',
+
+  // Funcionais
+  success: '#10B981', // Verde Saúde
+  info: '#3B82F6',    // Azul Clínico
+  warning: '#F59E0B', // Laranja Alerta
   
-  textTitle: '#1A1A1A',
-  textBody: '#71717A',
-  
-  success: '#4CAF50',
-  warning: '#FF9800',
-  info: '#2196F3',
+  // Empty State
+  dashedBorder: '#D1D5DB',
 };
 
 // ==========================================
-// 2. COMPONENTES VISUAIS AVANÇADOS
+// 2. COMPONENTES DE UI (ATÓMICOS)
 // ==========================================
 
-// Header com Perfil
-const Header = ({ onBack }: { onBack: () => void }) => (
+// Header Limpo e Moderno
+const Header = ({ onBack, userName }: { onBack: () => void, userName: string }) => (
   <View style={styles.header}>
     <View style={styles.headerLeft}>
-      <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Ionicons name="arrow-back" size={24} color="#333" />
+      <TouchableOpacity 
+        onPress={onBack} 
+        style={styles.backButton}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
+        <Ionicons name="arrow-back" size={24} color={COLORS.textHeading} />
       </TouchableOpacity>
       <View>
-        <Text style={styles.headerSubtitle}>Bem-vindo,</Text>
-        <Text style={styles.headerTitle}>João da Silva</Text>
+        <Text style={styles.greeting}>Olá, <Text style={styles.userName}>{userName}</Text></Text>
+        <Text style={styles.location}>Camaçari - BA</Text>
       </View>
     </View>
-    <TouchableOpacity style={styles.profileBtn}>
-      <Image source={{ uri: 'https://github.com/shadcn.png' }} style={styles.avatar} />
-      <View style={styles.onlineBadge} />
+    <TouchableOpacity style={styles.notificationBtn}>
+      <Ionicons name="notifications-outline" size={24} color={COLORS.textHeading} />
+      <View style={styles.badge} />
     </TouchableOpacity>
   </View>
 );
 
-// Cartão SUS com Efeito Premium
-const SUSCard = () => (
-  <View style={styles.cardContainer}>
+// Cartão Vazio (Estado "Adicionar")
+const EmptyCardState = ({ onAdd }: { onAdd: () => void }) => (
+  <TouchableOpacity style={styles.emptyCardContainer} onPress={onAdd} activeOpacity={0.7}>
+    <View style={styles.dashedBorder}>
+      <View style={styles.addIconCircle}>
+        <Ionicons name="add" size={32} color={COLORS.primary} />
+      </View>
+      <Text style={styles.addCardTitle}>Adicionar Cartão SUS</Text>
+      <Text style={styles.addCardSubtitle}>
+        Toque para cadastrar seu cartão digital e ter acesso rápido aos serviços.
+      </Text>
+    </View>
+  </TouchableOpacity>
+);
+
+// Cartão Preenchido (Estado "Visualizar")
+const HealthCard = ({ number }: { number: string }) => (
+  <View style={styles.cardWrapper}>
     <LinearGradient
-      colors={[COLORS.primary, '#FF5252', '#FF8A80']}
+      colors={COLORS.primaryGradient}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={styles.susCard}
+      style={styles.realCard}
     >
-      {/* Background Decorativo */}
-      <View style={styles.cardPattern} />
-      <Ionicons name="medical" size={140} color="rgba(255,255,255,0.05)" style={styles.bgIcon} />
-
-      {/* Topo do Cartão */}
-      <View style={styles.cardTop}>
-        <View style={styles.susLogo}>
+      {/* Background Pattern Sutil */}
+      <Ionicons name="medkit" size={180} color="rgba(255,255,255,0.06)" style={styles.cardBgIcon} />
+      
+      <View style={styles.cardHeader}>
+        <View style={styles.susTag}>
           <Text style={styles.susText}>SUS</Text>
           <Text style={styles.digitalText}>Digital</Text>
         </View>
-        <Ionicons name="qr-code" size={28} color="#FFF" />
+        <Ionicons name="qr-code" size={24} color="#FFF" />
       </View>
 
-      {/* Chip Simulado */}
-      <View style={styles.chip} />
+      <View style={styles.cardChipRow}>
+        <View style={styles.chip} />
+        <Ionicons name="wifi" size={20} color="rgba(255,255,255,0.6)" style={{ transform: [{ rotate: '90deg' }] }} />
+      </View>
 
-      {/* Dados do Usuário */}
-      <View style={styles.cardBottom}>
+      <View style={styles.cardFooter}>
         <View>
-          <Text style={styles.cardLabel}>NÚMERO DO CARTÃO</Text>
-          <Text style={styles.cardNumber}>8900 1234 5678 9010</Text>
-        </View>
-        <View>
-          <Text style={styles.cardLabel}>VALIDADE</Text>
-          <Text style={styles.cardValue}>12/28</Text>
+          <Text style={styles.cardLabel}>CNS</Text>
+          <Text style={styles.cardNumber}>{number}</Text>
         </View>
       </View>
     </LinearGradient>
-    
-    {/* Sombra Colorida (Glow Effect) */}
-    <View style={styles.cardShadow} />
+    {/* Sombra Glow para dar profundidade */}
+    <View style={styles.cardGlow} />
   </View>
 );
 
-// Próximo Compromisso (UX Vital)
-const NextAppointment = () => (
-  <View style={styles.appointmentContainer}>
-    <Text style={styles.sectionTitle}>Próximo Agendamento</Text>
-    <TouchableOpacity style={styles.appointmentCard} activeOpacity={0.8}>
-      <View style={styles.dateBox}>
-        <Text style={styles.dateDay}>28</Text>
-        <Text style={styles.dateMonth}>MAI</Text>
-      </View>
-      
-      <View style={styles.appointmentInfo}>
-        <Text style={styles.doctorName}>Dr. Carlos Mendes</Text>
-        <Text style={styles.specialty}>Cardiologista • Policlínica</Text>
-        <View style={styles.timeRow}>
-          <Ionicons name="time-outline" size={14} color={COLORS.primary} />
-          <Text style={styles.timeText}>14:30</Text>
-        </View>
-      </View>
-      
-      <View style={styles.arrowContainer}>
-        <Ionicons name="chevron-forward" size={20} color="#C7C7CC" />
-      </View>
-    </TouchableOpacity>
-  </View>
-);
-
-// Grid de Serviços
-const ServiceGrid = () => {
-  const services = [
-    { id: 1, title: 'Vacinas', icon: 'shield-checkmark', color: COLORS.success },
-    { id: 2, title: 'Exames', icon: 'flask', color: COLORS.info },
-    { id: 3, title: 'Remédios', icon: 'medkit', color: COLORS.warning },
-    { id: 4, title: 'UPA 24h', icon: 'navigate', color: COLORS.primary },
-  ];
-
-  return (
-    <View style={styles.gridContainer}>
-      <Text style={styles.sectionTitle}>Serviços Rápidos</Text>
-      <View style={styles.grid}>
-        {services.map((item) => (
-          <TouchableOpacity key={item.id} style={styles.gridItem} activeOpacity={0.7}>
-            <View style={[styles.iconCircle, { backgroundColor: item.color + '15' }]}>
-              <Ionicons name={item.icon as any} size={28} color={item.color} />
-            </View>
-            <Text style={styles.gridLabel}>{item.title}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+// Botão de Ação Rápida (Bento Grid Style)
+const QuickAction = ({ title, subtitle, icon, color, onPress, fullWidth = false }: any) => (
+  <TouchableOpacity 
+    style={[styles.actionCard, fullWidth && styles.actionCardFull]} 
+    onPress={onPress}
+    activeOpacity={0.8}
+  >
+    <View style={[styles.iconBox, { backgroundColor: color + '15' }]}>
+      <Ionicons name={icon} size={24} color={color} />
     </View>
-  );
-};
-
-// Botão de Emergência Flutuante
-const EmergencyFAB = () => (
-  <TouchableOpacity style={styles.fab} activeOpacity={0.8}>
-    <View style={styles.fabIcon}>
-      <Ionicons name="call" size={24} color="#FFF" />
+    <View style={styles.actionContent}>
+      <Text style={styles.actionTitle}>{title}</Text>
+      <Text style={styles.actionSubtitle} numberOfLines={1}>{subtitle}</Text>
     </View>
-    <Text style={styles.fabText}>Ligar 192</Text>
+    <View style={styles.arrowCircle}>
+      <Ionicons name="chevron-forward" size={16} color={COLORS.textBody} />
+    </View>
   </TouchableOpacity>
 );
 
@@ -171,6 +149,16 @@ const EmergencyFAB = () => (
 export default function SaudeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  
+  // ESTADO: Controla se o usuário tem cartão ou não
+  const [hasCard, setHasCard] = useState(false); 
+
+  const handleAddCard = () => {
+    // Simulação de cadastro
+    Alert.alert("Sucesso", "Cartão adicionado com sucesso!", [
+      { text: "OK", onPress: () => setHasCard(true) }
+    ]);
+  };
 
   return (
     <View style={styles.screen}>
@@ -180,39 +168,84 @@ export default function SaudeScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 10 }]}
         showsVerticalScrollIndicator={false}
       >
-        <Header onBack={() => router.back()} />
-        
-        <SUSCard />
-        
-        <NextAppointment />
-        
-        <ServiceGrid />
+        <Header onBack={() => router.back()} userName="Cidadão" />
 
-        {/* Banner Informativo */}
-        <View style={styles.bannerInfo}>
-          <Ionicons name="information-circle" size={24} color={COLORS.primary} />
-          <Text style={styles.bannerText}>
-            Campanha de vacinação contra a Dengue ativa nos postos de saúde.
-          </Text>
+        {/* ÁREA DO CARTÃO (DINÂMICA) */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Meu Documento</Text>
+          {hasCard ? (
+            <TouchableOpacity onLongPress={() => setHasCard(false)}> 
+               {/* Dica: Long press para remover e testar o botão de novo */}
+               <HealthCard number="8900 1020 3040 5000" />
+            </TouchableOpacity>
+          ) : (
+            <EmptyCardState onAdd={handleAddCard} />
+          )}
+        </View>
+
+        {/* GRID DE AÇÕES */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Acesso Rápido</Text>
+          
+          <View style={styles.grid}>
+            {/* Linha 1 */}
+            <QuickAction 
+              title="Agendar" 
+              subtitle="Consulta ou Exame" 
+              icon="calendar" 
+              color={COLORS.primary} 
+            />
+            <QuickAction 
+              title="Vacinas" 
+              subtitle="Carteira Digital" 
+              icon="shield-checkmark" 
+              color={COLORS.success} 
+            />
+            
+            {/* Linha 2 (Full Width) */}
+            <QuickAction 
+              title="Medicamentos" 
+              subtitle="Verificar disponibilidade na farmácia popular" 
+              icon="medkit" 
+              color={COLORS.info} 
+              fullWidth
+            />
+             <QuickAction 
+              title="UPA 24h" 
+              subtitle="Tempo de espera: 20 min" 
+              icon="time" 
+              color={COLORS.warning} 
+              fullWidth
+            />
+          </View>
         </View>
 
       </ScrollView>
-
-      {/* Botão de Emergência Fixo */}
-      <View style={[styles.fabContainer, { bottom: insets.bottom + 20 }]}>
-        <EmergencyFAB />
-      </View>
     </View>
   );
 }
 
+// ==========================================
+// 4. ESTILIZAÇÃO PROFISSIONAL
+// ==========================================
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: COLORS.bg,
   },
   scrollContent: {
-    paddingBottom: 100, // Espaço para o FAB
+    paddingBottom: 40,
+  },
+  sectionContainer: {
+    paddingHorizontal: SPACING,
+    marginBottom: 32,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLORS.textHeading,
+    marginBottom: 16,
+    letterSpacing: -0.5,
   },
 
   // HEADER
@@ -226,304 +259,251 @@ const styles = StyleSheet.create({
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 16,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#FFF',
-    borderRadius: 12,
+    width: 44,
+    height: 44,
+    backgroundColor: COLORS.surface,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // Micro sombra
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#FFF',
+  },
+  greeting: {
+    fontSize: 14,
+    color: COLORS.textBody,
+  },
+  userName: {
+    color: COLORS.textHeading,
+    fontWeight: '700',
+  },
+  location: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: COLORS.primary,
+    marginTop: 2,
+  },
+  notificationBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: COLORS.surface,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  headerSubtitle: {
-    fontSize: 12,
-    color: COLORS.textBody,
-    fontWeight: '600',
-  },
-  headerTitle: {
-    fontSize: 18,
-    color: COLORS.textTitle,
-    fontWeight: '800',
-  },
-  profileBtn: {
-    position: 'relative',
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 2,
     borderColor: '#FFF',
   },
-  onlineBadge: {
-    width: 12,
-    height: 12,
-    backgroundColor: '#4CAF50',
-    borderRadius: 6,
+  badge: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
-    borderWidth: 2,
-    borderColor: COLORS.bg,
+    top: 12,
+    right: 12,
+    width: 8,
+    height: 8,
+    backgroundColor: COLORS.primary,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: COLORS.surface,
   },
 
-  // SUS CARD (O Highlight)
-  cardContainer: {
-    paddingHorizontal: SPACING,
-    marginBottom: 32,
+  // EMPTY STATE (ADICIONAR CARTÃO)
+  emptyCardContainer: {
+    width: '100%',
+    height: 180,
+    backgroundColor: 'rgba(229, 57, 53, 0.04)', // Tintura vermelha muito leve
+    borderRadius: 24,
+    overflow: 'hidden',
+  },
+  dashedBorder: {
+    flex: 1,
+    borderWidth: 2,
+    borderColor: '#FECACA', // Vermelho bem claro
+    borderStyle: 'dashed',
+    borderRadius: 24,
+    margin: 2, // Para não cortar a borda
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  addIconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  addCardTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.textHeading,
+    marginBottom: 4,
+  },
+  addCardSubtitle: {
+    fontSize: 13,
+    color: COLORS.textBody,
+    textAlign: 'center',
+    lineHeight: 18,
+    maxWidth: '80%',
+  },
+
+  // REAL CARD (CARTÃO SUS)
+  cardWrapper: {
+    position: 'relative',
     alignItems: 'center',
   },
-  susCard: {
+  realCard: {
     width: '100%',
-    height: 220,
+    height: 200,
     borderRadius: 24,
     padding: 24,
     justifyContent: 'space-between',
-    overflow: 'hidden',
     zIndex: 2,
   },
-  cardPattern: {
+  cardGlow: {
     position: 'absolute',
-    top: -50,
-    right: -50,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    bottom: -15,
+    width: '85%',
+    height: 30,
+    backgroundColor: COLORS.primary,
+    borderRadius: 30,
+    opacity: 0.3,
+    zIndex: 1,
+    transform: [{ scaleX: 0.9 }],
   },
-  bgIcon: {
+  cardBgIcon: {
     position: 'absolute',
+    right: -30,
     bottom: -30,
-    left: -30,
-    opacity: 0.2,
+    opacity: 0.15,
   },
-  cardTop: {
+  cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
-  susLogo: {
+  susTag: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 4,
   },
   susText: {
-    color: '#FFF',
     fontSize: 24,
     fontWeight: '900',
+    color: '#FFF',
     fontStyle: 'italic',
   },
   digitalText: {
-    color: '#FFEBEE',
     fontSize: 14,
+    color: 'rgba(255,255,255,0.9)',
     fontWeight: '500',
   },
-  chip: {
-    width: 40,
-    height: 30,
-    backgroundColor: '#FFD700', // Dourado
-    borderRadius: 6,
-    opacity: 0.8,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.1)',
-  },
-  cardBottom: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-  },
-  cardLabel: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  cardNumber: {
-    color: '#FFF',
-    fontSize: 20,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textShadowColor: 'rgba(0,0,0,0.2)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-    fontVariant: ['tabular-nums'],
-  },
-  cardValue: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  cardShadow: {
-    position: 'absolute',
-    bottom: -15,
-    width: '90%',
-    height: 40,
-    backgroundColor: COLORS.primary,
-    opacity: 0.3,
-    borderRadius: 20,
-    zIndex: 1,
-    transform: [{ scaleX: 0.9 }],
-  },
-
-  // TITULOS DE SEÇÃO
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: COLORS.textTitle,
-    marginBottom: 16,
-    marginLeft: SPACING,
-  },
-
-  // APPOINTMENT
-  appointmentContainer: {
-    paddingHorizontal: SPACING,
-    marginBottom: 32,
-  },
-  appointmentCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    padding: 16,
-    borderRadius: 20,
-    // Sombra suave
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  dateBox: {
-    backgroundColor: COLORS.primarySoft,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 14,
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  dateDay: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: COLORS.primary,
-  },
-  dateMonth: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: COLORS.primary,
-    textTransform: 'uppercase',
-  },
-  appointmentInfo: {
-    flex: 1,
-  },
-  doctorName: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.textTitle,
-    marginBottom: 2,
-  },
-  specialty: {
-    fontSize: 13,
-    color: COLORS.textBody,
-    marginBottom: 6,
-  },
-  timeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  timeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.primary,
-  },
-  arrowContainer: {
-    padding: 8,
-  },
-
-  // GRID DE SERVIÇOS
-  gridContainer: {
-    marginBottom: 32,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: SPACING,
-    gap: 16,
-  },
-  gridItem: {
-    width: (width - (SPACING * 2) - 16) / 2, // 2 por linha
-    backgroundColor: COLORS.surface,
-    padding: 16,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#F3F4F6',
-  },
-  iconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  gridLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.textTitle,
-  },
-
-  // BANNER INFO
-  bannerInfo: {
-    marginHorizontal: SPACING,
-    backgroundColor: '#E3F2FD',
-    borderRadius: 16,
-    padding: 16,
+  cardChipRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
   },
-  bannerText: {
-    flex: 1,
-    fontSize: 13,
-    color: '#1565C0',
-    lineHeight: 18,
+  chip: {
+    width: 45,
+    height: 34,
+    backgroundColor: '#FCD34D', // Ouro
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.1)',
+    opacity: 0.9,
+  },
+  cardFooter: {
+    marginTop: 'auto',
+  },
+  cardLabel: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.8)',
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    marginBottom: 4,
+  },
+  cardNumber: {
+    fontSize: 22,
+    color: '#FFF',
+    fontWeight: '600',
+    letterSpacing: 2,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace', // Fonte monoespaçada para números
   },
 
-  // FAB (Botão de Emergência)
-  fabContainer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
+  // GRID ACTIONS
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
   },
-  fab: {
-    backgroundColor: '#D32F2F', // Vermelho Emergência
+  actionCard: {
+    width: (width - (SPACING * 2) - 16) / 2, // 2 colunas
+    backgroundColor: COLORS.surface,
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+    // Sombra suave
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.03,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  actionCardFull: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    borderRadius: 30,
-    gap: 10,
-    shadowColor: '#D32F2F',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
+    paddingVertical: 20,
   },
-  fabIcon: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    padding: 6,
-    borderRadius: 20,
+  iconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  fabText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: 0.5,
+  actionContent: {
+    flex: 1,
+    marginLeft: 0, // Ajustado para flex row
+  },
+  // Ajuste específico para cards full width
+  actionCardFull_Content: {
+    marginLeft: 16,
+  },
+  actionTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: COLORS.textHeading,
+    marginBottom: 4,
+  },
+  actionSubtitle: {
+    fontSize: 12,
+    color: COLORS.textBody,
+  },
+  arrowCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 16,
+    right: 16,
   },
 });
