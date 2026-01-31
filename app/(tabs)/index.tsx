@@ -83,12 +83,13 @@ export default function HomeScreen() {
 
   const services = [
     { id: 1, title: 'Saúde & Vacinas', icon: 'medkit', color: BRAND_COLORS.red },
-    { id: 2, title: 'Educação', icon: 'school', color: BRAND_COLORS.green },
-    { id: 3, title: 'IPTU e Tributos', icon: 'document-text', color: BRAND_COLORS.orange },
-    { id: 4, title: 'Transporte Universitário', icon: 'bus', color: BRAND_COLORS.red },
-    { id: 5, title: 'Transporte', icon: 'bus', color: BRAND_COLORS.purple },
-    { id: 6, title: 'Obras Públicas', icon: 'construct', color: BRAND_COLORS.orange },
-    { id: 7, title: 'Assistência Social', icon: 'people', color: BRAND_COLORS.green },
+    { id: 2, title: 'Jurídico & Cidadania', icon: 'book', color: BRAND_COLORS.orange },
+    { id: 3, title: 'Educação', icon: 'school', color: BRAND_COLORS.green },
+    { id: 4, title: 'IPTU e Tributos', icon: 'document-text', color: BRAND_COLORS.orange },
+    { id: 5, title: 'Transporte Universitário', icon: 'bus', color: BRAND_COLORS.red },
+    { id: 6, title: 'Transporte', icon: 'bus', color: BRAND_COLORS.purple },
+    { id: 7, title: 'Obras Públicas', icon: 'construct', color: BRAND_COLORS.orange },
+    { id: 8, title: 'Assistência Social', icon: 'people', color: BRAND_COLORS.green },
   ];
 
   return (
@@ -170,9 +171,10 @@ export default function HomeScreen() {
                     router.push('/tributos/tributos');
                   } else if (service.title === 'Transporte Universitário') {
                     router.push('/universitario/universitario');
+                  } else if (service.title === 'Jurídico & Cidadania') {
+                    router.push('/juridico/juridico');
                   } else {
-                    // Ação padrão ou mensagem de serviço indisponível
-                    alert('Serviço em breve disponível!');
+                    console.log("Serviço em desenvolvimento");
                   }
                 }} 
               />
