@@ -7,29 +7,32 @@ import {
   TouchableOpacity, 
   StatusBar,
   Dimensions,
-  Platform
+  Platform,
+  Linking, // Importação essencial para abrir apps externos
+  Alert
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-// Se tiver o BlurView instalado, fica lindo, se não, usamos view normal
-// import { BlurView } from 'expo-blur'; 
 
 // ==========================================
-// 1. PALETA DE CORES DA MARCA (PREFEITURA)
+// 1. PALETA DE CORES DA MARCA
 // ==========================================
 const COLORS = {
-  primary: '#7CB342',    // Verde (Ação Principal)
-  secondary: '#8E24AA',  // Roxo (Títulos/Cultura)
-  accent: '#FB8C00',     // Laranja (Destaques/Sol)
-  danger: '#E53935',     // Vermelho (Coração)
-  background: '#F8F9FA', // Off-white moderno
+  primary: '#7CB342',    // Verde
+  secondary: '#8E24AA',  // Roxo
+  accent: '#FB8C00',     // Laranja
+  danger: '#E53935',     // Vermelho
+  background: '#F8F9FA', 
   surface: '#FFFFFF',
   textMain: '#1A1A1A',
   textSec: '#666666',
 };
 
+// ==========================================
+// 2. DADOS (COM COORDENADAS REAIS)
+// ==========================================
 const beaches = [
   {
     id: 1,
@@ -38,7 +41,8 @@ const beaches = [
     desc: 'Dunas brancas e o famoso "piscinão" natural.',
     image: require('@/assets/images/jaua.jpg'),
     distance: '25 km',
-    rating: 4.5
+    rating: 4.5,
+    coords: { lat: -12.8492, lng: -38.2456 } // Coordenadas de Jauá
   },
   {
     id: 2,
@@ -47,7 +51,8 @@ const beaches = [
     desc: 'Aldeia hippie famosa mundialmente e piscinas tranquilas.',
     image: require('@/assets/images/arembepe.png'),
     distance: '30 km',
-    rating: 4.7
+    rating: 4.7,
+    coords: { lat: -12.7589, lng: -38.1697 } // Coordenadas de Arembepe
   },
   {
     id: 3,
@@ -56,7 +61,8 @@ const beaches = [
     desc: 'Águas cristalinas e piscinas naturais. Infraestrutura completa.',
     image: require('@/assets/images/guarajuba.png'), 
     distance: '42 km',
-    rating: 4.9
+    rating: 4.9,
+    coords: { lat: -12.6515187, lng: -38.0697291 } // Coordenadas de Guarajuba
   },
   {
     id: 4,
@@ -65,11 +71,11 @@ const beaches = [
     desc: 'Ondas para surf e encontro do rio com o mar.',
     image: require('@/assets/images/itacimirim.jpg'),
     distance: '48 km',
-    rating: 4.8
+    rating: 4.8,
+    coords: { lat: -12.6074, lng: -38.0465 } // Coordenadas de Itacimirim
   },
 ];
 
-// Filtros de Categoria (UX: Facilita a busca)
 const categories = ['Todas', 'Família', 'Surf', 'Agitadas', 'Calmas'];
 
 export default function TurismoScreen() {
@@ -77,11 +83,35 @@ export default function TurismoScreen() {
   const insets = useSafeAreaInsets();
   const [activeCategory, setActiveCategory] = useState('Todas');
 
+  // ==========================================
+  // FUNÇÃO DE NAVEGAÇÃO INTELIGENTE
+  // ==========================================
+  const openNavigation = (lat: number, lng: number, label: string) => {
+    // Esquema para Apple Maps (iOS)
+    const schemeIOS = `maps://?daddr=${lat},${lng}&dirflg=d&t=m`;
+    // Esquema para Google Maps (Android)
+    const schemeAndroid = `google.navigation:q=${lat},${lng}`;
+
+    const url = Platform.select({
+      ios: schemeIOS,
+      android: schemeAndroid
+    });
+
+    if (url) {
+      Linking.openURL(url).catch(() => {
+        Alert.alert(
+          'Erro ao abrir mapa', 
+          'Não foi possível abrir o aplicativo de mapas.'
+        );
+      });
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: COLORS.background }]}>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
       
-      {/* HEADER DINÂMICO */}
+      {/* HEADER */}
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <TouchableOpacity 
           onPress={() => router.back()} 
@@ -102,7 +132,7 @@ export default function TurismoScreen() {
         showsVerticalScrollIndicator={false}
       >
         
-        {/* TÍTULO HERO */}
+        {/* HERO */}
         <View style={styles.heroSection}>
           <Text style={styles.heroTitle}>
             Descubra o <Text style={{ color: COLORS.primary }}>Paraíso</Text>{'\n'}
@@ -110,7 +140,7 @@ export default function TurismoScreen() {
           </Text>
         </View>
 
-        {/* CATEGORIAS (SCROLL HORIZONTAL) */}
+        {/* CATEGORIAS */}
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false} 
@@ -122,7 +152,7 @@ export default function TurismoScreen() {
               key={index} 
               style={[
                 styles.categoryChip, 
-                activeCategory === cat && { backgroundColor: COLORS.secondary }
+                activeCategory === cat && { backgroundColor: COLORS.secondary, borderColor: COLORS.secondary }
               ]}
               onPress={() => setActiveCategory(cat)}
             >
@@ -141,9 +171,9 @@ export default function TurismoScreen() {
               key={item.id} 
               activeOpacity={0.9} 
               style={styles.card}
-              onPress={() => {}}
+              // AÇÃO DE CLIQUE NO CARD INTEIRO
+              onPress={() => openNavigation(item.coords.lat, item.coords.lng, item.name)}
             >
-              {/* IMAGEM COM OVERLAY */}
               <View style={styles.imageWrapper}>
                 <Image 
                   source={item.image} 
@@ -152,19 +182,16 @@ export default function TurismoScreen() {
                   transition={500}
                 />
                 
-                {/* Badge de Rating */}
                 <View style={styles.ratingBadge}>
                   <Ionicons name="star" size={12} color="#FFF" />
                   <Text style={styles.ratingText}>{item.rating}</Text>
                 </View>
 
-                {/* Botão de Favorito */}
                 <TouchableOpacity style={styles.favoriteBtn}>
                   <Ionicons name="heart-outline" size={20} color="#FFF" />
                 </TouchableOpacity>
               </View>
 
-              {/* CONTEÚDO DO CARD */}
               <View style={styles.cardContent}>
                 <View style={styles.cardHeader}>
                   <Text style={styles.cardName}>{item.name}</Text>
@@ -183,9 +210,13 @@ export default function TurismoScreen() {
                     <Text style={styles.infoText}>{item.distance} do centro</Text>
                   </View>
                   
-                  <TouchableOpacity style={styles.exploreBtn}>
-                    <Text style={styles.exploreText}>Ver Detalhes</Text>
-                    <Ionicons name="arrow-forward" size={16} color="#FFF" />
+                  {/* BOTÃO ESPECÍFICO DE IR */}
+                  <TouchableOpacity 
+                    style={styles.exploreBtn}
+                    onPress={() => openNavigation(item.coords.lat, item.coords.lng, item.name)}
+                  >
+                    <Text style={styles.exploreText}>Ir Agora</Text>
+                    <Ionicons name="navigate-circle" size={20} color="#FFF" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -205,7 +236,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
   },
-  // HEADER
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -233,8 +263,6 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 2,
   },
-
-  // HERO
   heroSection: {
     paddingHorizontal: 20,
     marginTop: 10,
@@ -246,8 +274,6 @@ const styles = StyleSheet.create({
     color: COLORS.textMain,
     lineHeight: 36,
   },
-
-  // CATEGORIAS
   categoriesScroll: {
     maxHeight: 50,
     marginBottom: 20,
@@ -270,8 +296,6 @@ const styles = StyleSheet.create({
     color: COLORS.textSec,
     fontSize: 14,
   },
-
-  // CARDS
   cardsContainer: {
     paddingHorizontal: 20,
     gap: 24,
@@ -299,7 +323,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 15,
     left: 15,
-    backgroundColor: COLORS.accent, // Laranja da marca
+    backgroundColor: COLORS.accent,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
@@ -323,8 +347,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
-  // CARD CONTENT
   cardContent: {
     padding: 20,
   },
@@ -340,13 +362,13 @@ const styles = StyleSheet.create({
     color: COLORS.textMain,
   },
   tagBadge: {
-    backgroundColor: '#F3E5F5', // Roxo bem clarinho
+    backgroundColor: '#F3E5F5',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
   },
   tagText: {
-    color: COLORS.secondary, // Roxo da marca
+    color: COLORS.secondary,
     fontSize: 12,
     fontWeight: '600',
   },
@@ -377,11 +399,17 @@ const styles = StyleSheet.create({
   exploreBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primary, // Verde da marca
-    paddingVertical: 8,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 10,
     paddingHorizontal: 16,
-    borderRadius: 12,
+    borderRadius: 14,
     gap: 6,
+    // Sombra sutil no botão
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
   },
   exploreText: {
     color: '#FFF',
