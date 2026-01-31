@@ -165,6 +165,11 @@ export default function HomeScreen() {
                     router.push('/saude/saude');
                   } else if (service.title === 'Assistência Social') {
                     router.push('/assistencia/assistencia');
+                  } else if (service.title === 'IPTU e Tributos') {
+                    router.push('/tributos/tributos');
+                  } else {
+                    // Ação padrão ou mensagem de serviço indisponível
+                    alert('Serviço em breve disponível!');
                   }
                 }} 
               />
