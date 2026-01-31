@@ -163,8 +163,8 @@ export default function HomeScreen() {
                     router.push('/educacao/educacao');
                   } else if (service.title === 'Saúde & Vacinas') {
                     router.push('/saude/saude');
-                  } else {
-                    console.log(`Clicou em ${service.title}`);
+                  } else if (service.title === 'Assistência Social') {
+                    router.push('/assistencia/assistencia');
                   }
                 }} 
               />
