@@ -82,6 +82,7 @@ export default function HomeScreen() {
   const router = useRouter();
 
   const services = [
+    { id: 0, title: 'Mãe Atípica', icon: 'heart', color: BRAND_COLORS.purple },
     { id: 1, title: 'Saúde & Vacinas', icon: 'medkit', color: BRAND_COLORS.red },
     { id: 2, title: 'Jurídico & Cidadania', icon: 'book', color: BRAND_COLORS.orange },
     { id: 3, title: 'Educação', icon: 'school', color: BRAND_COLORS.green },
@@ -173,8 +174,10 @@ export default function HomeScreen() {
                     router.push('/universitario/universitario');
                   } else if (service.title === 'Jurídico & Cidadania') {
                     router.push('/juridico/juridico');
+                  } else if (service.title === 'Mãe Atípica') {
+                    router.push('/maeatipica/inicio');
                   } else {
-                    console.log("Serviço em desenvolvimento");
+                    console.log(`Navegar para ${service.title}`); // Placeholder para outros serviços
                   }
                 }} 
               />

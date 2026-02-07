@@ -22,6 +22,7 @@ export default function RootLayout() {
         <Stack.Screen name='tributos/tributos' options={{ headerShown: false }}/>
         <Stack.Screen name='universitario/universitario' options={{ headerShown: false }}/>
         <Stack.Screen name='juridico/juridico' options={{ headerShown: false }}/>
+        <Stack.Screen name='maeatipica' options={{ headerShown: false }}/>
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
