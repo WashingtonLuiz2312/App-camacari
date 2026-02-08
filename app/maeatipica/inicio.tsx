@@ -165,7 +165,7 @@ const Index = () => {
             {/* SOS Navbar */}
             <TouchableOpacity 
               style={styles.sosButtonSmall}
-              onPress={() => router.push('/emergency')}
+              onPress={() => router.push('/maeatipica/emergencia/sos')}
             >
               <ShieldAlert size={16} color={COLORS.white} />
               <Text style={styles.sosTextSmall}>SOS</Text>
@@ -205,7 +205,7 @@ const Index = () => {
                 icon={ShieldAlert} 
                 variant="destructive"
                 style={{ width: '100%', marginBottom: 12 }}
-                onPress={() => router.push('/emergency')} 
+                onPress={() => router.push('/maeatipica/emergencia/sos')} 
               />
               <Button 
                 label="Entrar na Comunidade" 
@@ -249,7 +249,7 @@ const Index = () => {
           {/* Destaque: Cofre de Provas */}
           <TouchableOpacity 
             style={styles.featureHighlight}
-            onPress={() => router.push('/evidence')}
+            onPress={() => router.push('/maeatipica/evidencia/cofre')}
             activeOpacity={0.9}
           >
             <LinearGradient
@@ -277,7 +277,7 @@ const Index = () => {
               title="Guia Jurídico" 
               desc="Entenda seus direitos e medidas protetivas." 
               colorClass="purple" 
-              onPress={() => router.push('/juridico/juridico')}
+              onPress={() => router.push('/maeatipica/juridico/legal')}
             />
             <FeatureCard 
               icon={Heart} 
@@ -291,7 +291,7 @@ const Index = () => {
               title="Rede Próxima" 
               desc="Geolocalização de delegacias e ONGs." 
               colorClass="blue" 
-              onPress={() => router.push('/services')}
+              onPress={() => router.push('/maeatipica/servicos/servicos')}
             />
             <FeatureCard 
               icon={Users} 
@@ -305,7 +305,7 @@ const Index = () => {
               title="Capacitação" 
               desc="Cursos para independência financeira." 
               colorClass="orange" 
-              onPress={() => router.push('/education')}
+              onPress={() => router.push('/maeatipica/educacao/educacao')}
             />
           </View>
         </View>
@@ -330,7 +330,7 @@ const Index = () => {
                 label="Ativar SOS Silencioso" 
                 variant="destructive"
                 style={{ width: '100%' }}
-                onPress={() => router.push('/emergency')}
+                onPress={() => router.push('/maeatipica/emergencia/sos')}
               />
               <Button 
                 label="Ligar 190 (Polícia)" 
@@ -354,13 +354,13 @@ const Index = () => {
           
           {/* Links Rápidos Footer */}
           <View style={styles.footerLinks}>
-             <TouchableOpacity onPress={() => router.push('/emergency')}>
+             <TouchableOpacity onPress={() => router.push('/maeatipica/emergencia/sos')}>
                <Text style={styles.footerLinkText}>Botão de Pânico</Text>
              </TouchableOpacity>
-             <TouchableOpacity onPress={() => router.push('/legal')}>
+             <TouchableOpacity onPress={() => router.push('/maeatipica/juridico/legal')}>
                <Text style={styles.footerLinkText}>Direitos da Mulher</Text>
              </TouchableOpacity>
-             <TouchableOpacity onPress={() => router.push('/services')}>
+             <TouchableOpacity onPress={() => router.push('/maeatipica/servicos/servicos')}>
                <Text style={styles.footerLinkText}>Delegacias Próximas</Text>
              </TouchableOpacity>
           </View>

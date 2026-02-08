@@ -25,6 +25,7 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 
 // --- CONFIGURAÇÃO DE CORES ---
 const COLORS = {
@@ -56,12 +57,20 @@ const { width } = Dimensions.get('window');
 
 // --- COMPONENTES AUXILIARES ---
 
-// Card Genérico
-const Card = ({ children, style, noShadow }: any) => (
-  <View style={[styles.card, !noShadow && styles.shadow, style]}>
-    {children}
-  </View>
-);
+// Card Genérico (Atualizado para ser clicável)
+const Card = ({ children, style, noShadow, onPress }: any) => {
+  const Container = onPress ? TouchableOpacity : View;
+  
+  return (
+    <Container 
+      style={[styles.card, !noShadow && styles.shadow, style]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      {children}
+    </Container>
+  );
+};
 
 // Accordion Item (FAQ)
 const AccordionItem = ({ question, answer }: any) => {
@@ -100,38 +109,76 @@ const ExternalLinkButton = ({ label, url }: any) => (
 // --- TELA PRINCIPAL ---
 
 const LegalScreen = () => {
+  const router = useRouter();
+
+  // Dados das Leis com Links Reais
+  const lawsData = [
+    { 
+      label: "Lei 11.340", 
+      title: "Maria da Penha", 
+      desc: "Contra violência doméstica e familiar.", 
+      color: COLORS.pink600, 
+      border: COLORS.pink200,
+      url: "http://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11340.htm"
+    },
+    { 
+      label: "Lei 8.742", 
+      title: "BPC-LOAS", 
+      desc: "Benefício assistencial de 1 salário mínimo.", 
+      color: COLORS.blue600, 
+      border: COLORS.blue200,
+      url: "https://www.gov.br/mds/pt-br/acoes-e-programas/assistencia-social/beneficios-assistenciais/bpc"
+    },
+    { 
+      label: "Lei 13.146", 
+      title: "Estatuto PCD", 
+      desc: "Direitos fundamentais da pessoa com deficiência.", 
+      color: COLORS.purple600, 
+      border: COLORS.purple100,
+      url: "http://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm"
+    },
+    { 
+      label: "Lei 13.438", 
+      title: "Diagnóstico", 
+      desc: "Obrigatoriedade de protocolo para detecção precoce.", 
+      color: COLORS.indigo600, 
+      border: COLORS.indigo200,
+      url: "http://www.planalto.gov.br/ccivil_03/_ato2015-2018/2017/lei/l13438.htm"
+    },
+  ];
+
   const steps = [
     {
       number: "01",
       title: "Reúna Evidências",
       description: "Salve prints, áudios e fotos em nosso Cofre Seguro ou na nuvem. Testemunhas também são fundamentais.",
       icon: FileText,
-      color: "#2563eb", // blue-600
-      bg: "#eff6ff" // blue-50
+      color: "#2563eb", 
+      bg: "#eff6ff" 
     },
     {
       number: "02",
       title: "Procure uma Delegacia",
       description: "Dirija-se à Delegacia da Mulher (DEAM) ou à delegacia mais próxima. Você tem direito a atendimento prioritário.",
       icon: Shield,
-      color: "#9333ea", // purple-600
-      bg: "#faf5ff" // purple-50
+      color: "#9333ea", 
+      bg: "#faf5ff" 
     },
     {
       number: "03",
       title: "Registre o B.O.",
       description: "Relate todos os detalhes sem medo. O Boletim de Ocorrência é o primeiro passo oficial para sua proteção.",
       icon: Scale,
-      color: "#4f46e5", // indigo-600
-      bg: "#eef2ff" // indigo-50
+      color: "#4f46e5", 
+      bg: "#eef2ff" 
     },
     {
       number: "04",
       title: "Medida Protetiva",
       description: "Solicite a medida protetiva de urgência imediata. O juiz tem o prazo de 48 horas para decidir.",
       icon: CheckCircle2,
-      color: "#059669", // emerald-600
-      bg: "#ecfdf5" // emerald-50
+      color: "#059669", 
+      bg: "#ecfdf5" 
     }
   ];
 
@@ -148,7 +195,10 @@ const LegalScreen = () => {
         >
           <SafeAreaView>
             <View style={styles.heroContent}>
-              <TouchableOpacity style={styles.backButton}>
+              <TouchableOpacity 
+                style={styles.backButton}
+                onPress={() => router.back()} // AÇÃO DE VOLTAR
+              >
                 <View style={styles.backIconBox}>
                   <ArrowLeft size={16} color={COLORS.white} />
                 </View>
@@ -168,7 +218,11 @@ const LegalScreen = () => {
                 Conheça seus direitos, entenda as leis e saiba exatamente como agir para proteger você e sua família. Linguagem clara, sem "juridiquês".
               </Text>
 
-              <TouchableOpacity style={styles.heroButton} activeOpacity={0.8}>
+              <TouchableOpacity 
+                style={styles.heroButton} 
+                activeOpacity={0.8}
+                onPress={() => Linking.openURL('https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes')} // LINK EXEMPLO PDF
+              >
                 <BookOpen size={20} color={COLORS.purple600} style={{ marginRight: 8 }} />
                 <Text style={styles.heroButtonText}>Baixar Guia PDF Completo</Text>
               </TouchableOpacity>
@@ -181,16 +235,19 @@ const LegalScreen = () => {
           
           {/* --- CARDS DE LEIS --- */}
           <View style={styles.lawsGrid}>
-            {[
-              { label: "Lei 11.340", title: "Maria da Penha", desc: "Contra violência doméstica e familiar.", color: COLORS.pink600, border: COLORS.pink200 },
-              { label: "Lei 8.742", title: "BPC-LOAS", desc: "Benefício assistencial de 1 salário mínimo.", color: COLORS.blue600, border: COLORS.blue200 },
-              { label: "Lei 13.146", title: "Estatuto PCD", desc: "Direitos fundamentais da pessoa com deficiência.", color: COLORS.purple600, border: COLORS.purple100 },
-              { label: "Lei 13.438", title: "Diagnóstico", desc: "Obrigatoriedade de protocolo para detecção precoce.", color: COLORS.indigo600, border: COLORS.indigo200 },
-            ].map((item, index) => (
-              <Card key={index} style={[styles.lawCard, { borderTopColor: item.border }]}>
+            {lawsData.map((item, index) => (
+              <Card 
+                key={index} 
+                style={[styles.lawCard, { borderTopColor: item.border }]}
+                onPress={() => Linking.openURL(item.url)} // LINK PARA A LEI
+              >
                 <Text style={styles.lawLabel}>{item.label}</Text>
                 <Text style={[styles.lawTitle, { color: item.color }]}>{item.title}</Text>
                 <Text style={styles.lawDesc}>{item.desc}</Text>
+                <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 8}}>
+                   <Text style={{color: item.color, fontSize: 12, fontWeight: '600', marginRight: 4}}>Ler na íntegra</Text>
+                   <ExternalLink size={12} color={item.color} />
+                </View>
               </Card>
             ))}
           </View>
@@ -203,13 +260,12 @@ const LegalScreen = () => {
             </View>
 
             <View style={styles.stepsContainer}>
-              {/* Linha Vertical */}
               <View style={styles.stepsLine} />
 
               {steps.map((step, idx) => {
                 const Icon = step.icon;
                 return (
-                  <Card key={idx} style={styles.stepCard}>
+                  <Card key={idx} style={styles.stepCard} noShadow>
                     <View style={[styles.stepIconBox, { backgroundColor: step.bg }]}>
                       <Icon size={24} color={step.color} />
                     </View>
@@ -266,7 +322,7 @@ const LegalScreen = () => {
                 
                 <TouchableOpacity 
                   style={styles.callBtn}
-                  onPress={() => Linking.openURL('tel:190')}
+                  onPress={() => Linking.openURL('tel:190')} // LIGA PARA 190
                 >
                   <View style={[styles.callIcon, { backgroundColor: COLORS.red100 }]}>
                     <Phone size={20} color={COLORS.red600} />
@@ -279,7 +335,7 @@ const LegalScreen = () => {
 
                 <TouchableOpacity 
                   style={styles.callBtn}
-                  onPress={() => Linking.openURL('tel:180')}
+                  onPress={() => Linking.openURL('tel:180')} // LIGA PARA 180
                 >
                   <View style={[styles.callIcon, { backgroundColor: COLORS.purple100 }]}>
                     <Heart size={20} color={COLORS.purple600} />
@@ -299,7 +355,7 @@ const LegalScreen = () => {
                 <Text style={styles.linksTitle}>Links Oficiais</Text>
               </View>
               <View style={{ gap: 8 }}>
-                <ExternalLinkButton label="Lei Maria da Penha (Íntegra)" url="https://www.planalto.gov.br" />
+                <ExternalLinkButton label="Lei Maria da Penha (Íntegra)" url="http://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11340.htm" />
                 <ExternalLinkButton label="Portal Meu INSS" url="https://meu.inss.gov.br" />
                 <ExternalLinkButton label="Defensoria Pública" url="https://www.defensoria.ba.def.br/" />
                 <ExternalLinkButton label="Ministério das Mulheres" url="https://www.gov.br/mulheres" />
